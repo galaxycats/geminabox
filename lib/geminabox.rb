@@ -16,7 +16,10 @@ class Geminabox < Sinatra::Base
 
   get '/' do
     begin
-      @gems = Marshal.load(Gem.gunzip(Gem.read_binary( File.join(options.data, "specs.#{Gem.marshal_version}.gz")) ))
+      @gems = %w(latest_specs prerelease_specs).inject([]) do |gems, spec|
+        gems << Marshal.load(Gem.gunzip(Gem.read_binary( File.join(options.data, "#{spec}.#{Gem.marshal_version}.gz")) ))
+      end
+      @gems = @gems.flatten
     rescue
       @gems = []
     end
